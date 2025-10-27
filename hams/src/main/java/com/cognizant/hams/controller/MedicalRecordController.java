@@ -20,7 +20,16 @@ public class MedicalRecordController {
     @PostMapping("/doctors/me/medical-records")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<MedicalRecordResponseDTO> createRecord(@Valid @RequestBody MedicalRecordDTO dto) {
+        System.out.println("=== CREATE MEDICAL RECORD REQUEST ===");
+        System.out.println("Appointment ID: " + dto.getAppointmentId());
+        System.out.println("Patient ID: " + dto.getPatientId());
+        System.out.println("Doctor ID: " + dto.getDoctorId());
+        System.out.println("Diagnosis: " + dto.getDiagnosis());
+        System.out.println("Prescriptions: " + (dto.getPrescriptions() != null ? dto.getPrescriptions().size() : 0));
+
         MedicalRecordResponseDTO saved = medicalRecordService.createRecord(dto);
+
+        System.out.println("Medical record created successfully with ID: " + saved.getRecordId());
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
     @GetMapping("/patients/me/medical-records")
@@ -29,9 +38,9 @@ public class MedicalRecordController {
         return ResponseEntity.ok(medicalRecordService.getRecordsForPatient());
     }
 
-    @GetMapping("/doctors/{doctorId}/medical-records")
+    @GetMapping("/doctors/me/medical-records") // ✨ Changed path to /doctors/me/...
     @PreAuthorize("hasRole('DOCTOR')")
-    public ResponseEntity<List<MedicalRecordResponseDTO>> getRecordsForDoctor(@PathVariable Long doctorId) {
-        return ResponseEntity.ok(medicalRecordService.getRecordsForDoctor(doctorId));
+    public ResponseEntity<List<MedicalRecordResponseDTO>> getRecordsForDoctor() {
+        return ResponseEntity.ok(medicalRecordService.getRecordsForDoctor());
     }
 }

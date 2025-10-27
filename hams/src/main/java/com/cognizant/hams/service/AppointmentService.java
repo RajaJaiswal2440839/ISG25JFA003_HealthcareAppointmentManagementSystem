@@ -2,7 +2,9 @@
 package com.cognizant.hams.service;
 
 import com.cognizant.hams.dto.request.AppointmentDTO;
+import com.cognizant.hams.dto.request.RescheduleAppointmentRequestDTO;
 import com.cognizant.hams.dto.response.AppointmentResponseDTO;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
@@ -13,7 +15,10 @@ public interface AppointmentService {
     List<AppointmentResponseDTO> getAppointmentsForDoctor();
 
     AppointmentResponseDTO bookAppointment(AppointmentDTO appointmentDTO);
-    AppointmentResponseDTO updateAppointment(Long appointmentId, AppointmentDTO appointmentUpdateDTO);
+
+    @Transactional
+    AppointmentResponseDTO rescheduleAppointment(Long appointmentId, RescheduleAppointmentRequestDTO appointmentDTO);
+
     AppointmentResponseDTO cancelAppointment(Long appointmentId);
     AppointmentResponseDTO getAppointmentById(Long appointmentId);
     List<AppointmentResponseDTO> getAppointmentsForPatient();
@@ -23,4 +28,6 @@ public interface AppointmentService {
     long getPendingReviewsCountForDoctor(String username);
 
     List<AppointmentResponseDTO> getTodayAppointmentsForDoctor();
+
+    Long getTotalPatientCountForCurrentDoctor();
 }

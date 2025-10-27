@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -148,5 +149,40 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
     @Override
     public List<DoctorAndAvailabilityResponseDTO> searchDoctorByName(String doctorName){
         return doctorRepository.findByDoctorNameAndAvailability(doctorName);
+    }
+
+    @Override
+    public List<DoctorAvailabilityResponseDTO> getDoctorAvailabilityByDate(Long doctorId, String dateString) {
+        LocalDate availableDate = LocalDate.parse(dateString); // Assuming ISO 8601 format (yyyy-MM-dd)
+
+        List<DoctorAvailability> availabilities =
+                doctorAvailabilityRepository.findByDoctorDoctorIdAndAvailableDate(doctorId, availableDate);
+
+        return availabilities.stream()
+                .map(availability -> modelMapper.map(availability, DoctorAvailabilityResponseDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DoctorAvailabilityResponseDTO> getDoctorAvailabilityByDate(String dateString) {
+
+        Doctor loggedInDoctor = getDoctorFromSecurityContext();
+
+        LocalDate availableDate;
+        try {
+            availableDate = LocalDate.parse(dateString);
+        } catch (java.time.format.DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid date format provided: " + dateString + ". Expected format is YYYY-MM-DD.", e);
+        }
+
+        List<DoctorAvailability> availabilities =
+                doctorAvailabilityRepository.findByDoctorDoctorIdAndAvailableDate(
+                        loggedInDoctor.getDoctorId(),
+                        availableDate // <-- Now passing LocalDate object
+                );
+
+        return availabilities.stream()
+                .map(availability -> modelMapper.map(availability, DoctorAvailabilityResponseDTO.class))
+                .collect(Collectors.toList());
     }
 }

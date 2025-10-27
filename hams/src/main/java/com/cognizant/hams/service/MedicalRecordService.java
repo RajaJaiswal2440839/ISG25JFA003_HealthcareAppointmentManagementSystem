@@ -7,5 +7,5 @@ import java.util.List;
 public interface MedicalRecordService {
     MedicalRecordResponseDTO createRecord(MedicalRecordDTO dto);
     List<MedicalRecordResponseDTO> getRecordsForPatient();
-    List<MedicalRecordResponseDTO> getRecordsForDoctor(Long doctorId);
+    List<MedicalRecordResponseDTO> getRecordsForDoctor();
 }

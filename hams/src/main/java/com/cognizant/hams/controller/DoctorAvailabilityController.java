@@ -78,4 +78,29 @@ public class DoctorAvailabilityController {
         List<DoctorAndAvailabilityResponseDTO> doctorAndAvailabilityResponseDTOList = doctorAvailabilityService.searchDoctorByName(doctorName);
         return new ResponseEntity<>(doctorAndAvailabilityResponseDTOList, HttpStatus.OK);
     }
+
+    @GetMapping("/patients/doctor-availability/{doctorId}")
+    public ResponseEntity<List<DoctorAvailabilityResponseDTO>> getDoctorAvailabilityByDate(
+            @PathVariable("doctorId") Long doctorId,
+            @RequestParam("date") String date) {
+        List<DoctorAvailabilityResponseDTO> availability =
+                doctorAvailabilityService.getDoctorAvailabilityByDate(doctorId, date);
+        return new ResponseEntity<>(availability, HttpStatus.OK);
+    }
+
+    @GetMapping("/doctor/availability")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<List<DoctorAvailabilityResponseDTO>> getDoctorAvailability(
+            @RequestParam(required = false) String date) {
+
+        List<DoctorAvailabilityResponseDTO> availability;
+        if (date != null && !date.isEmpty()) {
+            // Filter by date
+            availability = doctorAvailabilityService.getDoctorAvailabilityByDate(date);
+        } else {
+            // Get all availability
+            availability = doctorAvailabilityService.getDoctorAvailability();
+        }
+        return new ResponseEntity<>(availability, HttpStatus.OK);
+    }
 }

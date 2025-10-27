@@ -1,6 +1,7 @@
 package com.cognizant.hams.controller;
 
 import com.cognizant.hams.dto.request.AppointmentDTO;
+import com.cognizant.hams.dto.request.RescheduleAppointmentRequestDTO;
 import com.cognizant.hams.dto.response.AppointmentResponseDTO;
 import com.cognizant.hams.service.AppointmentService;
 import com.cognizant.hams.service.DoctorService;
@@ -39,13 +40,6 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
-//    @GetMapping("/doctors/me/appointments")
-//    @PreAuthorize("hasRole('DOCTOR')")
-//    public ResponseEntity<List<AppointmentResponseDTO>> getDoctorAppointments() {
-//        List<AppointmentResponseDTO> appointments = appointmentService.getAppointmentsForDoctor();
-//        return new ResponseEntity<>(appointments, HttpStatus.OK);
-//    }
-
     @GetMapping("/appointments/{appointmentId}")
     public ResponseEntity<AppointmentResponseDTO> getAppointmentById(
             @PathVariable("appointmentId") Long appointmentId) {
@@ -53,12 +47,14 @@ public class AppointmentController {
         return ResponseEntity.ok(appointment);
     }
 
-    @PatchMapping("patients/me/appointments/{appointmentId}")
-    public ResponseEntity<AppointmentResponseDTO> updateAppointment(
+    @PutMapping("/doctors/appointments/{appointmentId}/reschedule")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<AppointmentResponseDTO> rescheduleAppointment(
             @PathVariable("appointmentId") Long appointmentId,
-            @Valid @RequestBody AppointmentDTO appointmentUpdateDTO) {
-        AppointmentResponseDTO updatedAppointment = appointmentService.updateAppointment(appointmentId, appointmentUpdateDTO);
-        return ResponseEntity.ok(updatedAppointment);
+            @Valid @RequestBody RescheduleAppointmentRequestDTO rescheduleDTO) {
+        AppointmentResponseDTO updatedAppointment =
+                appointmentService.rescheduleAppointment(appointmentId, rescheduleDTO);
+        return new ResponseEntity<>(updatedAppointment, HttpStatus.OK);
     }
 
     @PatchMapping("/appointments/{appointmentId}/cancel")
@@ -120,5 +116,11 @@ public class AppointmentController {
     public ResponseEntity<List<AppointmentResponseDTO>> getTodayAppointmentsForDoctor() {
         List<AppointmentResponseDTO> appointments = appointmentService.getTodayAppointmentsForDoctor();
         return ResponseEntity.ok(appointments);
+    }
+
+    @GetMapping("/doctor/patient-count")
+    public ResponseEntity<Long> getTotalPatientForCurrentDoctor(){
+        Long totalPatients = appointmentService.getTotalPatientCountForCurrentDoctor();
+        return ResponseEntity.ok(totalPatients);
     }
 }

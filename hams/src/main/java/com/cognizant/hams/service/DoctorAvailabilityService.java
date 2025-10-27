@@ -29,4 +29,7 @@ public interface DoctorAvailabilityService {
 
     List<DoctorAndAvailabilityResponseDTO> searchDoctorByName(String doctorName);
 
+    List<DoctorAvailabilityResponseDTO> getDoctorAvailabilityByDate(Long doctorId, String date);
+
+    List<DoctorAvailabilityResponseDTO> getDoctorAvailabilityByDate(String date);
 }
